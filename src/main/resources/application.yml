@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://postgres:5432/hotel_service
+    username: postgres
+    password: postgres
+    hikari:
+      data-source-properties:
+        search_path: hotel_schema
