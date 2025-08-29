@@ -1,4 +1,4 @@
-package com.skillbox.hotel_reservations.model.hotelDTO;
+package com.skillbox.hotel_reservations.model.filter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HotelResponse {
+public class HotelFilter {
 
     private Long id;
     private String title;
     private String description;
     private String city;
     private String address;
-    private double distanceFromCenter;
-    private float rating;
-    private int numberOfRatings;
+    private Double distance;
+    private Float minRating;
+    private Float maxRating;
 }

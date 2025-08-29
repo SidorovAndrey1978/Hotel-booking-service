@@ -1,6 +1,8 @@
 package com.skillbox.hotel_reservations.model.hotelDTO;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +29,7 @@ public class HotelRequest {
     @NotBlank(message = "Вы не указали адрес!")
     private String address;
 
-    @NotBlank(message = "Расстояние от центра обязательно.")
+    @NotNull(message = "Расстояние от центра обязательно.")
+    @Positive(message = "Расстояние от центра должно быть положительным числом")
     private double distanceFromCenter;
 }

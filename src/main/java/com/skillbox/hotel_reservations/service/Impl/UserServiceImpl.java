@@ -3,10 +3,11 @@ package com.skillbox.hotel_reservations.service.Impl;
 import com.skillbox.hotel_reservations.enyity.User;
 import com.skillbox.hotel_reservations.exception.AlreadyExistsException;
 import com.skillbox.hotel_reservations.exception.EntityNotFoundException;
+import com.skillbox.hotel_reservations.kafka.events.UserRegisteredEvent;
 import com.skillbox.hotel_reservations.repository.UserRepository;
 import com.skillbox.hotel_reservations.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +22,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-
+    private final ApplicationEventPublisher applicationEventPublisher;
+    
     @Override
     @Transactional(readOnly = true)
     public User findByUsername(String username) {
@@ -66,6 +67,8 @@ public class UserServiceImpl implements UserService {
                 .roles(user.getRoles())
                 .build();
 
+        publishEvent(createUser);
+
         return userRepository.save(createUser);
     }
 
@@ -73,11 +76,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User update(User user) {
         User existingUser = getById(user.getId());
-        if (!user.getPassword().equals(existingUser.getPassword())) {
+        if (user.getUsername() != null && !user.getUsername().isEmpty()) {
+            existingUser.setUsername(user.getUsername());
+        }
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-
-        BeanUtils.copyProperties(user, existingUser, "id");
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            existingUser.setEmail(user.getEmail());
+        }
 
         return userRepository.save(existingUser);
     }
@@ -86,5 +93,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteById(Long id) {
         userRepository.delete(getById(id));
+    }
+    
+    private void publishEvent(User user) {
+        applicationEventPublisher.publishEvent(
+                new UserRegisteredEvent(user.getId()));
     }
 }

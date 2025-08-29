@@ -33,8 +33,8 @@ public class UserController {
         return ResponseEntity.ok(userMapper.toList(users));
     }
 
-    @PostMapping
-    public ResponseEntity<UserResponse> create(@Valid @RequestBody UserRequest request) {
+    @PostMapping("/register")
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRequest request) {
         User user = userService.create(userMapper.toEntity(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toResponse(user));
     }

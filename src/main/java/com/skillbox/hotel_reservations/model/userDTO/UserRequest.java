@@ -1,7 +1,6 @@
 package com.skillbox.hotel_reservations.model.userDTO;
 
 import com.skillbox.hotel_reservations.enyity.Role;
-import jakarta.persistence.SecondaryTable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

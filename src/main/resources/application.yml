@@ -8,3 +8,17 @@ spring:
     hikari:
       data-source-properties:
         search_path: hotel_schema
+  
+  data:
+    mongodb:
+      uri: mongodb://root:root@mongodb:27017/statistic_db?authSource=admin
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    topics:
+      register:
+        topic-name: register-topic
+        group-id: register-group-id
+      booking:
+        topic-name: booking-topic
+        group-id: booking-group-id

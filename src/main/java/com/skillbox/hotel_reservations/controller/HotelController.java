@@ -2,13 +2,19 @@ package com.skillbox.hotel_reservations.controller;
 
 import com.skillbox.hotel_reservations.enyity.Hotel;
 import com.skillbox.hotel_reservations.mapper.HotelMapper;
+import com.skillbox.hotel_reservations.model.filter.HotelFilter;
 import com.skillbox.hotel_reservations.model.hotelDTO.HotelRequest;
 import com.skillbox.hotel_reservations.model.hotelDTO.HotelResponse;
+import com.skillbox.hotel_reservations.model.hotelDTO.PagedHotelResponse;
 import com.skillbox.hotel_reservations.service.HotelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +34,36 @@ public class HotelController {
     }
 
     @GetMapping
-    public ResponseEntity<List<HotelResponse>> listHotels() {
-        List<Hotel> hotels = hotelService.findAll();
-        return ResponseEntity.ok(hotelMapper.toList(hotels));
+    public ResponseEntity<PagedHotelResponse> getPagedHotels(@RequestBody HotelFilter hotelFilter,
+                                                             @RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+
+        Pageable paging = PageRequest.of(page, size);
+        Page<Hotel> resultPage = hotelService.getFilteredHotels(hotelFilter, paging);
+
+        List<HotelResponse> hotels = hotelMapper.toList(resultPage.getContent());
+
+        PagedHotelResponse pagedResponse = PagedHotelResponse.builder()
+                .hotels(hotels)
+                .totalItems(resultPage.getTotalElements())
+                .totalPages(resultPage.getTotalPages())
+                .currentPage(resultPage.getNumber())
+                .hasNext(resultPage.hasNext())
+                .hasPrevious(resultPage.hasPrevious())
+                .build();
+
+        return ResponseEntity.ok(pagedResponse);
+
     }
 
+    @PutMapping("/{id}/rate/{mark}")
+    public ResponseEntity<HotelResponse> changeHotelRating(@PathVariable Long id,
+                                                           @PathVariable Float newMark) {
+        Hotel hotel = hotelService.changeRating(id, newMark);
+        return ResponseEntity.ok(hotelMapper.toResponse(hotel));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<HotelResponse> create(@Valid @RequestBody HotelRequest request) {
         Hotel createHotel = hotelService.create(hotelMapper.toEntity(request));
@@ -40,6 +71,7 @@ public class HotelController {
                 .body(hotelMapper.toResponse(createHotel));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<HotelResponse> update(@PathVariable Long id,
                                                 @Valid @RequestBody HotelRequest request) {
@@ -48,6 +80,7 @@ public class HotelController {
         return ResponseEntity.ok(hotelMapper.toResponse(updateHotel));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         hotelService.deleteById(id);

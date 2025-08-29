@@ -39,7 +39,7 @@ public class Hotel implements Serializable {
 
     @Min(value = 1)
     @Max(value = 5)
-    private Integer rating;
+    private Float rating;
 
     private Integer numberOfRatings;
 }

@@ -13,11 +13,10 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RoomMapper {
-
-    @Mapping(target = "hotel.id", ignore = true)
+    
     Room toEntity(RoomRequest request);
     
-    @Mapping(target = "hotel.id", ignore = true)
+    @Mapping(target = "hotel", ignore = true)
     default Room toEntity(Long id, RoomRequest request){
         Room room = toEntity(request);
         room.setId(id);
