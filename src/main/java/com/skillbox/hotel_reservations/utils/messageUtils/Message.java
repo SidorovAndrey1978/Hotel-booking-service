@@ -8,7 +8,7 @@ public class Message {
     public final static String NOT_FOUND_USER_BY_ID = "User with ID: '%d' not found."; 
     public final static String USERNAME_EXISTS = "Username already exists!";
     public final static String EMAIL_EXISTS = "Email already exists!";
-    public final static String ROOM_IS_ALREADY_BOOKED = "Комната уже забронирована на указанные даты.";
+    public final static String ROOM_IS_ALREADY_BOOKED = "The room is already booked for the specified dates.";
 
     public final static String USER_REGISTER = "USER_REGISTER";
     public static final String ROOM_BOOKING = "ROOM_BOOKING";
